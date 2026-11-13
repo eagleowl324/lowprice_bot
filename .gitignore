@@ -1,0 +1,14 @@
+# 환경변수 및 인증키 보안 보호 (절대 커밋 금지)
+.env
+.env.*
+!.env.example
+
+# Python 캐시 파일
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 가상환경 및 로컬 설정
+.venv/
+venv/
+ENV/
