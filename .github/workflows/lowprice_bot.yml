@@ -1,0 +1,30 @@
+name: Daily Lowprice Bot
+
+on:
+  schedule:
+    # 한국 표준시(KST) 매일 오전 9시 (UTC 기준 00:00)
+    - cron: '0 0 * * *'
+  # GitHub 웹 콘솔에서 즉시 수동 실행 지원
+  workflow_dispatch:
+
+jobs:
+  run-bot:
+    name: run-bot
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 환경 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: lowprice_bot 실행
+        env:
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+        run: |
+          python lowprice_bot.py

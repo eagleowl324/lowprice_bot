@@ -36,18 +36,23 @@ ENV_FILE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
 
 
 def load_env_config() -> dict:
-    """프로젝트 폴더의 .env 파일에서 카카오 인증 정보를 안전하게 읽어옵니다."""
+    """프로젝트 폴더의 .env 파일 또는 시스템 환경변수(GitHub Secrets 등)에서 카카오 인증 정보를 안전하게 읽어옵니다."""
     config = {}
-    if not os.path.exists(ENV_FILE_PATH):
-        return config
-    with open(ENV_FILE_PATH, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#"):
-                continue
-            if "=" in line:
-                k, v = line.split("=", 1)
-                config[k.strip()] = v.strip()
+    if os.path.exists(ENV_FILE_PATH):
+        with open(ENV_FILE_PATH, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                if "=" in line:
+                    k, v = line.split("=", 1)
+                    config[k.strip()] = v.strip()
+
+    # 시스템 환경변수(GitHub Actions secrets 등)에서 fallback 로드
+    for key in ["KAKAO_REST_API_KEY", "KAKAO_CLIENT_SECRET", "KAKAO_REFRESH_TOKEN"]:
+        if not config.get(key) and os.environ.get(key):
+            config[key] = os.environ.get(key).strip()
+
     return config
 
 
